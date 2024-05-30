@@ -67,6 +67,6 @@ public class UI : MonoBehaviour
 
     public void DoChange()
     {
-        InputManager.ChangeInputEventOption(actionName, bindingIndex, rebindText);
+        InputManager.ChangeInputEventOption(actionName, bindingIndex);
     }
 }

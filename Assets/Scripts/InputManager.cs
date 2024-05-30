@@ -11,7 +11,7 @@ public class InputManager : MonoBehaviour
             actions = new Actions();
     }
 
-    public static void ChangeInputEventOption(string actionName, int bindingIndex, string statusText)
+    public static void ChangeInputEventOption(string actionName, int bindingIndex)
     {
         Debug.Log("ChangeInputEventOption : " + actionName);
         InputAction inputAction = actions.asset.FindAction(actionName);
@@ -25,26 +25,27 @@ public class InputManager : MonoBehaviour
         {
             Debug.Log("isComposite");
             var firstPartIndex = bindingIndex + 1;
-            if (firstPartIndex < inputAction.bindings.Count && inputAction.bindings[firstPartIndex].isComposite)
+            if (firstPartIndex < inputAction.bindings.Count && inputAction.bindings[firstPartIndex].isPartOfComposite)
             {
                 Debug.Log("DoChange for Composite");
-                DoChange(inputAction, bindingIndex, statusText, true);
+                DoChange(inputAction, firstPartIndex, true);
             }
         }
         else
         {
             Debug.Log("DoChange");
-            DoChange(inputAction, bindingIndex, statusText, false);
+            DoChange(inputAction, bindingIndex, false);
         }
             
     }
 
-    public static void DoChange(InputAction actionToChange, int bindingIndex, string statusText, bool allCompositeParts)
+    public static void DoChange(InputAction actionToChange, int bindingIndex, bool allCompositeParts)
     {
         if (actionToChange == null)
             return;
 
-        statusText = $"Press a {actionToChange.expectedControlType} for {actionToChange}";
+        string statusText;
+        statusText = $"Press a {actionToChange.expectedControlType} for {actionToChange.bindings[bindingIndex].name}";
         Debug.Log(statusText);
 
         actionToChange.Disable();
@@ -59,8 +60,8 @@ public class InputManager : MonoBehaviour
             if(allCompositeParts)
             {
                 var nextBindingIndex = bindingIndex + 1;
-                if (nextBindingIndex < actionToChange.bindings.Count && actionToChange.bindings[nextBindingIndex].isComposite)
-                    DoChange(actionToChange, nextBindingIndex, statusText, allCompositeParts);
+                if (nextBindingIndex < actionToChange.bindings.Count && actionToChange.bindings[nextBindingIndex].isPartOfComposite)
+                    DoChange(actionToChange, nextBindingIndex, allCompositeParts);
             }
 
             SaveBindingOverride(actionToChange);
@@ -94,6 +95,37 @@ public class InputManager : MonoBehaviour
         {
             if (!string.IsNullOrEmpty(PlayerPrefs.GetString(inputAction.actionMap + inputAction.name + i)))
                 inputAction.ApplyBindingOverride(i, PlayerPrefs.GetString(inputAction.actionMap + inputAction.name + i));
+        }
+    }
+
+    public delegate void delegateFunc(InputAction.CallbackContext obj);
+    
+    public static void AddInputEventFunction(string actionName, delegateFunc func, bool isCanceled = false, bool isPerformed = false, bool isStarted = true)
+    {
+        InputAction inputAction = actions.asset.FindAction(actionName);
+        if (isStarted)
+            //inputAction.started += func;
+        if (isPerformed)
+            //inputAction.performed +=func;
+        if(isCanceled)
+            //inputAction.canceled += func;
+        inputAction.Enable();
+    }
+
+    public void RemoveInputEventFunction(string actionName)
+    {
+        InputAction inputAction = actions.asset.FindAction(actionName);
+        //actions.PlayerActions.RemoveCallbacks();
+        inputAction.Disable();
+    }
+
+    private void RemoveAllEventFunction()
+    {
+        if(!Application.isPlaying)
+        {
+            //모든 액션 네임 반복
+            
+            //RemoveInputEventFunction();
         }
     }
 }

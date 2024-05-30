@@ -11,6 +11,8 @@ public class PlayerMove : MonoBehaviour
     private void OnEnable()
     {
         actions = InputManager.actions;
+        
+        //InputManager.AddInputEventFunction("Move", DoMove, true);
 
         actions.PlayerActions.Move.started += DoMove;
         actions.PlayerActions.Move.canceled += DoMove;
