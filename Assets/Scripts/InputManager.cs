@@ -99,12 +99,12 @@ public class InputManager : MonoBehaviour
     }
 
     public delegate void delegateFunc(InputAction.CallbackContext obj);
-    
-    public static void AddInputEventFunction(string actionName, delegateFunc func, bool isCanceled = false, bool isPerformed = false, bool isStarted = true)
+
+    public static void AddInputEventFunction(string actionName, IPlayerActions instance, bool isCanceled = false, bool isPerformed = false, bool isStarted = true)
     {
         InputAction inputAction = actions.asset.FindAction(actionName);
         if (isStarted)
-            //inputAction.started += func;
+            inputAction.started += instance.DoMove;
         if (isPerformed)
             //inputAction.performed +=func;
         if(isCanceled)
@@ -112,20 +112,25 @@ public class InputManager : MonoBehaviour
         inputAction.Enable();
     }
 
-    public void RemoveInputEventFunction(string actionName)
+    public void RemoveInputEventFunction(string actionName, delegateFunc func, bool isCanceled = false, bool isPerformed = false, bool isStarted = true)
     {
+        //특정 이벤트에 붙어있는 특정 함수만 등록 해제
         InputAction inputAction = actions.asset.FindAction(actionName);
-        //actions.PlayerActions.RemoveCallbacks();
+        if (isStarted)
+            //inputAction.started -= func;
+        if (isPerformed)
+            //inputAction.performed -=func;
+        if (isCanceled)
+            //inputAction.canceled -= func;
         inputAction.Disable();
     }
 
-    private void RemoveAllEventFunction()
+    private void RemoveAllEventFunction(string actionName)
     {
-        if(!Application.isPlaying)
-        {
-            //모든 액션 네임 반복
-            
-            //RemoveInputEventFunction();
-        }
+        //모든 액션 네임 아니고 특정 액션 네임 받아오면
+        //거기에 붙어있는 함수 다 제거
+        InputAction inputAction = actions.asset.FindAction(actionName);
+        inputAction.Reset();
+        //RemoveInputEventFunction(actionName, );
     }
 }
