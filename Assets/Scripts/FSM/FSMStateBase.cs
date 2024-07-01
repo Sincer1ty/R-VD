@@ -7,7 +7,7 @@ public abstract class FSMStateBase
 {
     public FSMState MyState { get; set; }
 
-    public virtual void Init() { };
+    public virtual void Init() { }
 
     public abstract void OnStateEnter();
     public abstract void OnStateExit();
