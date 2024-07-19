@@ -9,6 +9,7 @@ namespace Defines
         public enum PoolType
         {
             WaterMillPlatform,
+            StarHunts,
         }
     }
 }

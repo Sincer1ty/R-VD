@@ -8,8 +8,6 @@ using System.Timers;
 public class WaterMill : MonoBehaviour
 {
     [Header("Platform")]
-    [SerializeField] private PoolType platformType;
-    [SerializeField] private GameObject platformPrefab;
     [SerializeField] private int platformCount;
 
     [Header("WaterMillCenter")]
@@ -23,19 +21,27 @@ public class WaterMill : MonoBehaviour
 
     private void Start()
     {
-        PoolManager.Instance.CreatePool(platformType, platformPrefab.GetComponent<IPoolable>(), platformCount);
+        GameObject platform = (AddressableAssetsManager.Instance.SyncLoadObject(
+            AddressableAssetsManager.Instance.GetPrefabPath("Stage2", "watermillPlatform.prefab"), 
+            PoolType.WaterMillPlatform.ToString())) as GameObject;
+
+        if (platform == null)
+            return;
+        var platformPrefab = Instantiate(platform);
+
+        PoolManager.Instance.CreatePool(PoolType.WaterMillPlatform, platformPrefab.GetComponent<IPoolable>(), platformCount);
 
         // 처음 위치 정하기
         float delataDegree = 360.0f / platformCount;
         float currentDegree = 0.0f;
         for(int i = 0; i < platformCount; ++i)
         {
-            WaterMillPlatform platform = PoolManager.Instance.GetPoolObject(platformType) as WaterMillPlatform;
-            waterMillPlatforms.Add(platform);
-            platform.SetWaterMill(this);
+            WaterMillPlatform p = PoolManager.Instance.GetPoolObject(PoolType.WaterMillPlatform) as WaterMillPlatform;
+            waterMillPlatforms.Add(p);
+            p.SetWaterMill(this);
 
-            platform.transform.parent = platformCenter;
-            platform.Position = new Vector3(1f, platformRadios * Mathf.Cos(currentDegree * Mathf.Deg2Rad), platformRadios * Mathf.Sin(currentDegree * Mathf.Deg2Rad));
+            p.transform.parent = platformCenter;
+            p.Position = new Vector3(1f, platformRadios * Mathf.Cos(currentDegree * Mathf.Deg2Rad), platformRadios * Mathf.Sin(currentDegree * Mathf.Deg2Rad));
 
             currentDegree += delataDegree;
         }

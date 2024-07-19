@@ -38,12 +38,6 @@ public class PlayerMove : MonoBehaviour
         if (input != null)
         {
             moveDirection = new Vector3(input.x, 0f, input.y);
-            Debug.Log($"SEND_MESSAGE : {input.magnitude}");
         }
     }
-
-    //private void FixedUpdate()
-    //{
-    //    Debug.Log("Move Values " + actions.PlayerActions.Move.ReadValue<Vector2>());
-    //}
 }
